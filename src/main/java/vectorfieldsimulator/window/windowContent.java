@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -26,11 +27,14 @@ public class windowContent {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
         });
+        MenuSample.addMenu(scene);
     }
 
     public Parent createContent() {
-        Pane root = new Pane();
+        VBox root = new VBox();
         root.setPrefSize(1280, 720);
+        Pane visualizerPane = new Pane();
+        visualizerPane.setPrefSize(1280, 720);
 
         // populate the window with arrows
         for (int y = 0; y < 720 / 24; y++) {
@@ -41,12 +45,12 @@ public class windowContent {
                 a.setTranslateY(y * 24);
 
                 arrows.add(a);
-                root.getChildren().add(a);
+                visualizerPane.getChildren().add(a);
             }
         }
 
         circle = new Circle(10, Color.RED);
-        root.getChildren().add(circle);
+        visualizerPane.getChildren().add(circle);
         // animation for live updates
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -55,6 +59,8 @@ public class windowContent {
             }
         };
         timer.start();
+
+        root.getChildren().add(visualizerPane);
         return root;
     }
 
