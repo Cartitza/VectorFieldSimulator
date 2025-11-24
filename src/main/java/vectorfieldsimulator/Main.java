@@ -16,7 +16,7 @@ public class Main extends Application {
 
         stage.setTitle("Matlab Hmmm");
         stage.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
-        stage.setScene(window.scene);
+        stage.setScene(window.getScene());
         stage.show();
     }
 

@@ -3,13 +3,13 @@ package vectorfieldsimulator.window;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class windowContent {
     private double mouseY;
     private Circle circle;
 
-    public Scene scene;
+    private Scene scene;
 
     public windowContent() {
         scene = new Scene(createContent());
@@ -27,12 +27,18 @@ public class windowContent {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
         });
-        MenuSample.addMenu(scene);
+        menuSample.addMenus(scene);
+    }
+
+    public Scene getScene() {
+        return this.scene;
     }
 
     public Parent createContent() {
+        // scene is a VBox with a Pane inside
         VBox root = new VBox();
         root.setPrefSize(1280, 720);
+        HBox contentBox = new HBox();
         Pane visualizerPane = new Pane();
         visualizerPane.setPrefSize(1280, 720);
 
@@ -60,7 +66,8 @@ public class windowContent {
         };
         timer.start();
 
-        root.getChildren().add(visualizerPane);
+        contentBox.getChildren().add(visualizerPane);
+        root.getChildren().add(contentBox);
         return root;
     }
 
