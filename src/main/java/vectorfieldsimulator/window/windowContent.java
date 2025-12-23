@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import vectorfieldsimulator.propertyClasses.radioColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +19,20 @@ public class windowContent {
     private double mouseX;
     private double mouseY;
     private Circle circle;
+    private radioColor colorModel;
 
     private Scene scene;
 
     public windowContent() {
+        // pass it around to have the same value in multiple places
+        colorModel = new radioColor();
         scene = new Scene(createContent());
         scene.setOnMouseMoved(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
         });
-        menuSample.addMenus(scene);
+
+        menuSample.addMenus(scene, colorModel);
     }
 
     public Scene getScene() {
@@ -41,12 +46,14 @@ public class windowContent {
         HBox contentBox = new HBox();
         Pane visualizerPane = new Pane();
         visualizerPane.setPrefSize(1280, 720);
+        // ObjectProperty class to link color info
+        // radioColor colorModel = new radioColor();
 
         // populate the window with arrows
         for (int y = 0; y < 720 / 24; y++) {
             for (int x = 0; x < 1280 / 50; x++) {
 
-                var a = new Arrow(2.5);
+                var a = new Arrow(2.5, colorModel);
                 a.setTranslateX(x * 50);
                 a.setTranslateY(y * 24);
 
@@ -90,11 +97,24 @@ public class windowContent {
     // class that draws a line
     private static class Arrow extends Parent {
 
-        Arrow(double scale) {
+        Arrow(double scale, radioColor colorModel) {
 
             var lineTop = new Line(15 * scale, 5 * scale, 12.5 * scale, 2.5 * scale);
             var lineMid = new Line(0 * scale, 5 * scale, 15 * scale, 5 * scale);
             var lineBot = new Line(15 * scale, 5 * scale, 12.5 * scale, 7.5 * scale);
+            // lineTop.setStroke(Color.LIGHTSKYBLUE);
+
+            // uses what it listens from menu
+            colorModel.selectedColorProperty().addListener((obs, oldColor, newColor) -> {
+                lineTop.setStroke(newColor);
+                lineMid.setStroke(newColor);
+                lineBot.setStroke(newColor);
+            });
+
+            // Set initial color
+            lineTop.setStroke(colorModel.getSelectedColor());
+            lineMid.setStroke(colorModel.getSelectedColor());
+            lineBot.setStroke(colorModel.getSelectedColor());
 
             getChildren().addAll(lineTop, lineMid, lineBot);
         }

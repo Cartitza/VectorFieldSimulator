@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import vectorfieldsimulator.propertyClasses.radioColor;
 
 public class menuSample {
 
@@ -15,13 +16,13 @@ public class menuSample {
     public static Menu menuView;
     private static int toggleConfigPanel = 0;
 
-    public static void addMenus(Scene scene) {
+    public static void addMenus(Scene scene, radioColor colorModel) {
         // Create menu bar with 3 fields
         menuBar = new MenuBar();
 
         menuFile = new Menu("File");
         menuEdit = new Menu("Edit");
-        setEditOptions(menuEdit, scene);
+        setEditOptions(menuEdit, scene, colorModel);
         menuView = new Menu("View");
 
 
@@ -30,16 +31,16 @@ public class menuSample {
     }
 
     // function for Edit Menu option (might need a whole entire dedicated class)
-    private static void setEditOptions(Menu menuEdit, Scene scene) {
+    private static void setEditOptions(Menu menuEdit, Scene scene, radioColor colorModel) {
         MenuItem funcConfigPanel = new MenuItem("Open Function Configuration Panel");
 
-        TextArea controlsPane = new configPanel().getControls();
+        VBox controlsPane = new configPanel(colorModel);
         funcConfigPanel.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                // get the Hbox
 
+                // get the Hbox
                 HBox contentBox = (HBox) ((VBox) scene.getRoot()).getChildren().get(1);
                 if (toggleConfigPanel == 0) {
                     contentBox.getChildren().add(controlsPane);
