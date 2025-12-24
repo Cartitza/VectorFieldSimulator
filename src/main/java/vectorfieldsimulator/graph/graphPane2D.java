@@ -1,0 +1,95 @@
+package vectorfieldsimulator.graph;
+
+import javafx.animation.AnimationTimer;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import vectorfieldsimulator.propertyClasses.*;
+import vectorfieldsimulator.window.windowContent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class graphPane2D {
+    private List<Arrow> arrows = new ArrayList<>();
+    private mousePosition mouseMovement;
+    private Circle circle;
+    private Pane visualizerPane = new Pane();
+
+    public graphPane2D(double W, double H, mousePosition mouseMovement, radioColor colorModel) {
+        visualizerPane.setPrefSize(W, H);
+
+        // populate the window with arrows
+        for (int y = 0; y < H / 24; y++) {
+            for (int x = 0; x < W / 50; x++) {
+
+                var a = new Arrow(2.5, colorModel);
+                a.setTranslateX(x * 50);
+                a.setTranslateY(y * 24);
+
+                arrows.add(a);
+                visualizerPane.getChildren().add(a);
+            }
+        }
+
+        circle = new Circle(10, Color.RED);
+        visualizerPane.getChildren().add(circle);
+        // animation for live updates
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                onUpdate(mouseMovement);
+            }
+        };
+        timer.start();
+    }
+
+    public Pane getPane() {
+        return this.visualizerPane;
+    }
+
+    private void onUpdate(mousePosition mouseMovement) {
+        double mouseX = mouseMovement.getMouseX();
+        double mouseY = mouseMovement.getMouseY();
+
+        circle.setCenterX(mouseX);
+        circle.setCenterY(mouseY);
+
+        // calculate the rotation angle for each arrow
+        arrows.forEach(a -> {
+            var vx = mouseX - a.getTranslateX();
+            var vy = mouseY - a.getTranslateY();
+
+            var angle = Math.toDegrees(Math.atan2(vy, vx));
+
+            a.setRotate(angle);
+        });
+    }
+
+    // class that draws a line
+    private static class Arrow extends Parent {
+
+        Arrow(double scale, radioColor colorModel) {
+
+            var lineTop = new Line(15 * scale, 5 * scale, 12.5 * scale, 2.5 * scale);
+            var lineMid = new Line(0 * scale, 5 * scale, 15 * scale, 5 * scale);
+            var lineBot = new Line(15 * scale, 5 * scale, 12.5 * scale, 7.5 * scale);
+
+            // uses what it listens from menu
+            colorModel.selectedColorProperty().addListener((obs, oldColor, newColor) -> {
+                lineTop.setStroke(newColor);
+                lineMid.setStroke(newColor);
+                lineBot.setStroke(newColor);
+            });
+
+            // Set initial color
+            lineTop.setStroke(colorModel.getSelectedColor());
+            lineMid.setStroke(colorModel.getSelectedColor());
+            lineBot.setStroke(colorModel.getSelectedColor());
+
+            getChildren().addAll(lineTop, lineMid, lineBot);
+        }
+    }
+}
