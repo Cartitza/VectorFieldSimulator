@@ -14,11 +14,20 @@ import vectorfieldsimulator.graph.graphPane2D;
 
 public class windowContent {
 
+    /*
+        TODO:
+
+        - Canvas class: added inside graphPane2D.java (might need separate class)
+        - change onUpdate for animation
+
+    */
+
     private double mouseX;
     private double mouseY;
     private Circle circle;
     private radioColor colorModel;
     private mousePosition mouseMovement;
+    private functionValues vectorFunctions;
 
     private double H = 720;
     private double W = 1280;
@@ -29,13 +38,14 @@ public class windowContent {
         // pass it around to have the same value in multiple places
         colorModel = new radioColor();
         mouseMovement = new mousePosition();
+        vectorFunctions = new functionValues();
         scene = new Scene(createContent());
 
         scene.setOnMouseMoved(e -> {
             mouseMovement.setPosition(e.getSceneX(), e.getSceneY());
         });
 
-        menuSample.addMenus(scene, colorModel);
+        menuSample.addMenus(scene, colorModel, vectorFunctions);
     }
 
     public Scene getScene() {
@@ -47,16 +57,7 @@ public class windowContent {
         VBox root = new VBox();
         root.setPrefSize(W, H);
         HBox contentBox = new HBox();
-        Pane visualizerPane = new graphPane2D(W, H, mouseMovement, colorModel).getPane();
-
-        /*
-            TODO:
-
-            - Canvas class: added inside graphPane2D.java (might need separate class)
-            - change onUpdate for animation
-            - configPanel.java -> will need to add handling for Functions as input
-
-         */
+        Pane visualizerPane = new graphPane2D(W, H, mouseMovement, colorModel, vectorFunctions).getPane();
 
         // whole Pane definition is now another class
         contentBox.getChildren().add(visualizerPane);

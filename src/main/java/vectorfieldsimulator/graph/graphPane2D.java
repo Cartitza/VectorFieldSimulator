@@ -16,10 +16,16 @@ public class graphPane2D {
     private List<Arrow> arrows = new ArrayList<>();
     private mousePosition mouseMovement;
     private Circle circle;
+    private Axis axes;
     private Pane visualizerPane = new Pane();
 
-    public graphPane2D(double W, double H, mousePosition mouseMovement, radioColor colorModel) {
-        visualizerPane.setPrefSize(W, H);
+    public static double W, H;
+    public static final double menuH = 10;
+
+    public graphPane2D(double W, double H, mousePosition mouseMovement, radioColor colorModel, functionValues vectorFunctions) {
+        this.W = W;
+        this.H = H;
+        visualizerPane.setPrefSize(this.W, this.H);
 
         // populate the window with arrows
         for (int y = 0; y < H / 24; y++) {
@@ -35,11 +41,15 @@ public class graphPane2D {
         }
 
         circle = new Circle(10, Color.RED);
+        axes = new Axis();
         visualizerPane.getChildren().add(circle);
+        visualizerPane.getChildren().add(axes);
+
         // animation for live updates
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // here I will need to display the functions
                 onUpdate(mouseMovement);
             }
         };
@@ -90,6 +100,18 @@ public class graphPane2D {
             lineBot.setStroke(colorModel.getSelectedColor());
 
             getChildren().addAll(lineTop, lineMid, lineBot);
+        }
+    }
+
+    // class that creates X and Y axis
+    // not part of a commit!!
+    private static class Axis extends Parent {
+
+        Axis() {
+            var lineX = new Line(0, H/2 - 2*menuH, W, H/2 - 2*menuH);
+            var lineY = new Line(W/2 - 2*menuH, 0, W/2 - 2*menuH, H);
+
+            getChildren().addAll(lineX, lineY);
         }
     }
 }
