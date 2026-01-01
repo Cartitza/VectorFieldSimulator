@@ -2,6 +2,8 @@ package vectorfieldsimulator.graph;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -11,6 +13,7 @@ import vectorfieldsimulator.window.windowContent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class graphPane2D {
     private List<Arrow> arrows = new ArrayList<>();
@@ -18,14 +21,24 @@ public class graphPane2D {
     private Circle circle;
     private Axis axes;
     private Pane visualizerPane = new Pane();
+    private GraphicsContext g;
+    private functionData testFunc = new functionData(Color.RED, x -> x * x);
 
     public static double W, H;
-    public static final double menuH = 10;
+    public static final double MENU_H = 10;
+    public static final double PIXELS_PER_UNIT = 40;
 
     public graphPane2D(double W, double H, mousePosition mouseMovement, radioColor colorModel, functionValues vectorFunctions) {
         this.W = W;
         this.H = H;
         visualizerPane.setPrefSize(this.W, this.H);
+
+        // set the GraphicContext
+        Canvas canvas = new Canvas(this.W, this.H);
+        g = canvas.getGraphicsContext2D();
+        // offset to have the graph centered
+        g.translate(-2*MENU_H, -2*MENU_H);
+        g.setLineWidth(2.0);
 
         // populate the window with arrows
         for (int y = 0; y < H / 24; y++) {
@@ -44,6 +57,7 @@ public class graphPane2D {
         axes = new Axis();
         visualizerPane.getChildren().add(circle);
         visualizerPane.getChildren().add(axes);
+        visualizerPane.getChildren().add(canvas);
 
         // animation for live updates
         AnimationTimer timer = new AnimationTimer() {
@@ -67,6 +81,25 @@ public class graphPane2D {
         circle.setCenterX(mouseX);
         circle.setCenterY(mouseY);
 
+        // draw functions
+        g.clearRect(0, 0, W, H);
+        for (int drawX = 0; drawX < W; drawX++) {
+            g.setStroke(testFunc.color);
+
+            // math in order to differentiate pixel values from math values: scaling and descaling
+            double x = (drawX - W/2) / PIXELS_PER_UNIT;
+            double y = testFunc.f.apply(x);
+            double drawY = H - (y * PIXELS_PER_UNIT + H/2);
+
+            if (!(testFunc.oldX == 0.0 && testFunc.oldY == 0.0))
+                g.strokeLine(testFunc.oldX, testFunc.oldY, drawX, drawY);
+
+            testFunc.oldX = drawX;
+            testFunc.oldY = drawY;
+        }
+        testFunc.oldX = 0.0;
+        testFunc.oldY = 0.0;
+
         // calculate the rotation angle for each arrow
         arrows.forEach(a -> {
             var vx = mouseX - a.getTranslateX();
@@ -76,6 +109,22 @@ public class graphPane2D {
 
             a.setRotate(angle);
         });
+    }
+
+    // class with information about the function
+    private static class functionData {
+
+        private Color color;
+        private Function<Double, Double> f;
+        // private String fString;
+
+        private double oldX = 0.0;
+        private double oldY = 0.0;
+
+        functionData(Color color, Function<Double, Double> f) {
+            this.color = color;
+            this.f = f;
+        }
     }
 
     // class that draws a line
@@ -104,12 +153,11 @@ public class graphPane2D {
     }
 
     // class that creates X and Y axis
-    // not part of a commit!!
     private static class Axis extends Parent {
 
         Axis() {
-            var lineX = new Line(0, H/2 - 2*menuH, W, H/2 - 2*menuH);
-            var lineY = new Line(W/2 - 2*menuH, 0, W/2 - 2*menuH, H);
+            var lineX = new Line(0, H/2 - 2*MENU_H, W, H/2 - 2*MENU_H);
+            var lineY = new Line(W/2 - 2*MENU_H, 0, W/2 - 2*MENU_H, H);
 
             getChildren().addAll(lineX, lineY);
         }
