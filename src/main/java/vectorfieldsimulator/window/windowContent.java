@@ -17,8 +17,8 @@ public class windowContent {
     /*
         TODO:
 
-        - Canvas class: added inside graphPane2D.java (might need separate class)
-        - change onUpdate for animation
+        - use exp4j to evaluate strings as Function classes
+        - start studying how to apply this for vector fields
 
     */
 

@@ -11,6 +11,7 @@ module com.example.vectorfieldsimulator {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires exp4j;
 
     opens vectorfieldsimulator to javafx.fxml;
     exports vectorfieldsimulator;

@@ -13,6 +13,7 @@ import vectorfieldsimulator.window.windowContent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class graphPane2D {
@@ -22,7 +23,7 @@ public class graphPane2D {
     private Axis axes;
     private Pane visualizerPane = new Pane();
     private GraphicsContext g;
-    private functionData testFunc = new functionData(Color.RED, x -> x * x);
+    private functionData testFunc;
 
     public static double W, H;
     public static final double MENU_H = 10;
@@ -49,7 +50,7 @@ public class graphPane2D {
                 a.setTranslateY(y * 24);
 
                 arrows.add(a);
-                visualizerPane.getChildren().add(a);
+                // visualizerPane.getChildren().add(a);
             }
         }
 
@@ -63,7 +64,9 @@ public class graphPane2D {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // here I will need to display the functions
+
+                // function X
+                testFunc = new functionData(colorModel.getSelectedColor(), functionsMath.parseToFunction(vectorFunctions.getFx()));
                 onUpdate(mouseMovement);
             }
         };
