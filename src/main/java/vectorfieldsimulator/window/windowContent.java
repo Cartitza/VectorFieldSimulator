@@ -17,8 +17,7 @@ public class windowContent {
     /*
         TODO:
 
-        - use exp4j to evaluate strings as Function classes
-        - start studying how to apply this for vector fields
+        - change the X and Y to correctly represent the XoY axes (107 graphPane2D.java)
 
     */
 

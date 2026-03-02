@@ -11,17 +11,18 @@ public class functionsMath {
     private functionsMath() {}
 
     // function evaluator
-    public static Function<Double, Double> parseToFunction(String f) {
+    public static BiFunction<Double, Double, Double> parseToFunction(String f) {
         try {
-            Expression func = new ExpressionBuilder(f).variable("x").build();
+            Expression func = new ExpressionBuilder(f).variables("x", "y").build();
 
-            return x -> {
+            return (x, y) -> {
                 func.setVariable("x", x);
+                func.setVariable("y", y);
                 return func.evaluate();
             };
         } catch (Exception e) {
             System.err.println("Invalid function: " + e.getMessage());
-            return x -> 0.0; // fallback
+            return (x, y) -> x; // fallback
         }
     }
 }

@@ -23,7 +23,7 @@ public class graphPane2D {
     private Axis axes;
     private Pane visualizerPane = new Pane();
     private GraphicsContext g;
-    private functionData testFunc;
+    private functionData xFunc, yFunc;
 
     public static double W, H;
     public static final double MENU_H = 10;
@@ -42,15 +42,15 @@ public class graphPane2D {
         g.setLineWidth(2.0);
 
         // populate the window with arrows
-        for (int y = 0; y < H / 24; y++) {
-            for (int x = 0; x < W / 50; x++) {
+        for (int y = 0; y < H / 12; y++) {
+            for (int x = 0; x < W / 25; x++) {
 
-                var a = new Arrow(2.5, colorModel);
-                a.setTranslateX(x * 50);
-                a.setTranslateY(y * 24);
+                var a = new Arrow(1.25, colorModel);
+                a.setTranslateX(x * 25);
+                a.setTranslateY(y * 12);
 
                 arrows.add(a);
-                // visualizerPane.getChildren().add(a);
+                visualizerPane.getChildren().add(a);
             }
         }
 
@@ -66,7 +66,8 @@ public class graphPane2D {
             public void handle(long now) {
 
                 // function X
-                testFunc = new functionData(colorModel.getSelectedColor(), functionsMath.parseToFunction(vectorFunctions.getFx()));
+                xFunc = new functionData(colorModel.getSelectedColor(), functionsMath.parseToFunction(vectorFunctions.getFx()));
+                yFunc = new functionData(colorModel.getSelectedColor(), functionsMath.parseToFunction(vectorFunctions.getFy()));
                 onUpdate(mouseMovement);
             }
         };
@@ -86,30 +87,13 @@ public class graphPane2D {
 
         // draw functions
         g.clearRect(0, 0, W, H);
-        for (int drawX = 0; drawX < W; drawX++) {
-            g.setStroke(testFunc.color);
 
-            // math in order to differentiate pixel values from math values: scaling and descaling
-            double x = (drawX - W/2) / PIXELS_PER_UNIT;
-            double y = testFunc.f.apply(x);
-            double drawY = H - (y * PIXELS_PER_UNIT + H/2);
-
-            if (!(testFunc.oldX == 0.0 && testFunc.oldY == 0.0))
-                g.strokeLine(testFunc.oldX, testFunc.oldY, drawX, drawY);
-
-            testFunc.oldX = drawX;
-            testFunc.oldY = drawY;
-        }
-        testFunc.oldX = 0.0;
-        testFunc.oldY = 0.0;
-
-        // calculate the rotation angle for each arrow
+        // turn arrows accordingly
         arrows.forEach(a -> {
-            var vx = mouseX - a.getTranslateX();
-            var vy = mouseY - a.getTranslateY();
+            var vx = xFunc.f.apply(a.getTranslateX() - W/2 + 2.5*MENU_H, a.getTranslateY() - H/2 + 2.5*MENU_H);
+            var vy = yFunc.f.apply(a.getTranslateX() - W/2 + 2.5*MENU_H, a.getTranslateY() - H/2 + 2.5*MENU_H);
 
             var angle = Math.toDegrees(Math.atan2(vy, vx));
-
             a.setRotate(angle);
         });
     }
@@ -118,13 +102,13 @@ public class graphPane2D {
     private static class functionData {
 
         private Color color;
-        private Function<Double, Double> f;
+        private BiFunction<Double, Double, Double> f;
         // private String fString;
 
         private double oldX = 0.0;
         private double oldY = 0.0;
 
-        functionData(Color color, Function<Double, Double> f) {
+        functionData(Color color, BiFunction<Double, Double, Double> f) {
             this.color = color;
             this.f = f;
         }
@@ -160,7 +144,7 @@ public class graphPane2D {
 
         Axis() {
             var lineX = new Line(0, H/2 - 2*MENU_H, W, H/2 - 2*MENU_H);
-            var lineY = new Line(W/2 - 2*MENU_H, 0, W/2 - 2*MENU_H, H);
+            var lineY = new Line(W/2 - 2*MENU_H + 2.5, 0, W/2 - 2*MENU_H + 2.5, H);
 
             getChildren().addAll(lineX, lineY);
         }
